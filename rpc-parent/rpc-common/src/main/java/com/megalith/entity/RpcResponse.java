@@ -15,6 +15,16 @@ public class RpcResponse implements Serializable {
 
     private Object response;
 
+    private long id;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Throwable getError() {
         return error;
     }

@@ -1,6 +1,7 @@
 package com.megalith.entity;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Description:
@@ -10,6 +11,10 @@ import java.io.Serializable;
  */
 public class RpcRequest implements Serializable {
 
+    private static final AtomicLong REQUEST_ID = new AtomicLong(0);
+
+    private long id;
+
     private String serviceName;
 
     private String methodName;
@@ -17,6 +22,14 @@ public class RpcRequest implements Serializable {
     private Class<?>[] paramsTypes;
 
     private Object[] params;
+
+    public Long getId(){
+        return this.id;
+    }
+
+    public void newId(){
+        this.id =  REQUEST_ID.getAndIncrement();
+    }
 
     public String getServiceName() {
         return serviceName;

@@ -1,10 +1,10 @@
 package com.megalith.client;
 
 import com.megalith.entity.RpcRequest;
-import com.megalith.entity.RpcResponse;
+import com.megalith.repo.ClientRespotiry;
+import com.megalith.support.RpcFuture;
+import io.netty.channel.Channel;
 
-import java.io.*;
-import java.net.Socket;
 
 /**
  * @Description:
@@ -15,42 +15,13 @@ import java.net.Socket;
 public class RpcClient {
 
 
-    public Object transfer(RpcRequest rpcRequest,String host,int port){
-        InputStream in = null;
-        ObjectInputStream objIn  = null;
-        try(Socket socket = new Socket(host,port);
-            OutputStream out = socket.getOutputStream();
-            ObjectOutputStream objOut = new ObjectOutputStream(out)) {
-            objOut.writeObject(rpcRequest);
-            objOut.flush();
-            //获取返回结果
-            in = socket.getInputStream();
-            objIn = new ObjectInputStream(in);
-            Object o = objIn.readObject();
-            if ( o == null || !(o instanceof RpcResponse) ){
-                throw new RuntimeException("获取返回值异常");
-            }
-            RpcResponse response = (RpcResponse)o;
-            if ( response.getError() != null ){
-                throw new RuntimeException(response.getError());
-            }
-            return response.getResponse();
-
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }finally {
-            try {
-                if ( in != null ){
-                    in.close();
-                }
-                if ( objIn!= null ){
-                    objIn.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
+    public Object transfer(RpcRequest rpcRequest){
+        //此处应该有一个统一的注册中心，这样可以根据服务名找到对应的服务进行调用 此处就用第一个了
+        Long id = rpcRequest.getId();
+        RpcFuture rpcFuture = new RpcFuture(id,rpcRequest);
+        RpcFuture.putFuture(id,rpcFuture);
+        Channel channel = ClientRespotiry.getFirst();
+        channel.writeAndFlush(rpcRequest);
+        return rpcFuture.getResponse();
     }
 }
