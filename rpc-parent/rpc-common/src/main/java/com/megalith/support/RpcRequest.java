@@ -1,4 +1,4 @@
-package com.megalith.entity;
+package com.megalith.support;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,12 +23,16 @@ public class RpcRequest implements Serializable {
 
     private Object[] params;
 
-    public Long getId(){
-        return this.id;
+    public long getId() {
+        return id;
     }
 
-    public void newId(){
-        this.id =  REQUEST_ID.getAndIncrement();
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void newId() {
+        this.id = REQUEST_ID.getAndIncrement();
     }
 
     public String getServiceName() {
@@ -61,5 +65,14 @@ public class RpcRequest implements Serializable {
 
     public void setParams(Object[] params) {
         this.params = params;
+    }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "id=" + id +
+                ", serviceName='" + serviceName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                '}';
     }
 }

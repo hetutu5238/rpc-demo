@@ -1,15 +1,7 @@
 package com.megalith.support;
 
-import com.megalith.entity.RpcRequest;
-import com.megalith.entity.RpcResponse;
-
-import javax.xml.ws.Response;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Description:
@@ -19,21 +11,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class RpcFuture {
 
-    private static final Map<Long,RpcFuture> REPO = new ConcurrentHashMap<>();
-
-    private long id;
-
-    private RpcRequest rpcRequest;
-
-    private volatile RpcResponse rpcResponse;
-
+    private static final Map<Long, RpcFuture> REPO = new ConcurrentHashMap<>();
     private final Object lock = new Object();
-
     private final int timeOut = 10;
-
-    private boolean done(){
-        return this.rpcResponse!=null;
-    }
+    private long id;
+    private RpcRequest rpcRequest;
+    private volatile RpcResponse rpcResponse;
 
     public RpcFuture(long id , RpcRequest rpcRequest) {
         this.id = id;
@@ -46,38 +29,43 @@ public class RpcFuture {
 
     }
 
-    private void doRecieve(RpcResponse resp){
-        synchronized (lock){
+    public static void putFuture(Long id , RpcFuture rpcFuture) {
+        REPO.put(id , rpcFuture);
+    }
+
+    private boolean done() {
+        return this.rpcResponse != null;
+    }
+
+    private void doRecieve(RpcResponse resp) {
+        synchronized (lock) {
             this.rpcResponse = resp;
             lock.notifyAll();
         }
     }
 
-    public Object getResponse(){
+    public Object getResponse() {
         long millis = System.currentTimeMillis();
         //也可以使用BlockingQueue代替锁  但是会使线程阻塞
-        synchronized (lock){
-            if ( !done() ){
+        synchronized (lock) {
+            if ( !done() ) {
                 try {
-                    while ( !done() ){
-                        lock.wait(timeOut*1000);
+                    while ( !done() ) {
+                        lock.wait(timeOut * 1000);
                         //被唤醒后判断下完成或者超时
-                        if ( done() || System.currentTimeMillis()-millis > timeOut*1000){
+                        if ( done() || System.currentTimeMillis() - millis > timeOut * 1000 ) {
                             break;
                         }
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                if ( !done() ){
-                    throw new RuntimeException("服务已超时 服务id："+id+" 服务内容:"+rpcRequest);
+                if ( !done() ) {
+                    throw new RuntimeException("服务已超时 服务id：" + id + " 服务内容:" + rpcRequest);
                 }
             }
         }
 
         return rpcResponse.getResponse();
-    }
-    public static void putFuture(Long id, RpcFuture rpcFuture) {
-        REPO.put(id,rpcFuture);
     }
 }

@@ -1,4 +1,4 @@
-package com.megalith.entity;
+package com.megalith.support;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ public class RpcResponse implements Serializable {
 
     private long id;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -40,4 +40,6 @@ public class RpcResponse implements Serializable {
     public void setResponse(Object response) {
         this.response = response;
     }
+
+
 }

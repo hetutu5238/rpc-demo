@@ -1,11 +1,9 @@
 package com.megalith;
 
 
-import com.megalith.client.Client;
-import com.megalith.client.ProxyUtil;
-import com.megalith.entity.TestEntity;
+import com.megalith.util.ProxyUtil;
+import com.megalith.test.TestEntity;
 import com.megalith.test.TestService;
-import io.netty.channel.Channel;
 
 /**
  * @Description:
@@ -15,12 +13,13 @@ import io.netty.channel.Channel;
  */
 public class Consumer {
 
-    public static void main(String[] args) throws InterruptedException {
-        Channel init = Client.init();
-        System.out.println("初始化成功");
-        ProxyUtil proxyUtil = new ProxyUtil("localhost" , 8080);
+    public static void main(String[] args) {
+        ProxyUtil proxyUtil = new ProxyUtil();
         TestService proxy = proxyUtil.getProxy(TestService.class);
-        TestEntity test = proxy.getTest("你好" , "helloword");
-        System.out.println("收到信息：" + test);
+        int i = 1;
+        while ( i < 500 ) {
+            TestEntity test = proxy.getTest("你好" + i++ , "helloword" + i);
+            System.out.println("收到信息：" + test);
+        }
     }
 }

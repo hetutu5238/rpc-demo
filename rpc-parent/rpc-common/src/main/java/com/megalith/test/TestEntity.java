@@ -1,4 +1,4 @@
-package com.megalith.entity;
+package com.megalith.test;
 
 import java.io.Serializable;
 

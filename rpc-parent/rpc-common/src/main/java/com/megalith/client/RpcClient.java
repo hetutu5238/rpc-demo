@@ -1,8 +1,13 @@
 package com.megalith.client;
 
-import com.megalith.entity.RpcRequest;
-import com.megalith.repo.ClientRespotiry;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.megalith.config.RegisterConfig;
+import com.megalith.repository.ServiceConnectionFactory;
+import com.megalith.support.RpcRequest;
+import com.megalith.repository.ClientRepository;
 import com.megalith.support.RpcFuture;
+import com.megalith.util.Assert;
 import io.netty.channel.Channel;
 
 
@@ -15,13 +20,28 @@ import io.netty.channel.Channel;
 public class RpcClient {
 
 
-    public Object transfer(RpcRequest rpcRequest){
-        //此处应该有一个统一的注册中心，这样可以根据服务名找到对应的服务进行调用 此处就用第一个了
-        Long id = rpcRequest.getId();
-        RpcFuture rpcFuture = new RpcFuture(id,rpcRequest);
-        RpcFuture.putFuture(id,rpcFuture);
-        Channel channel = ClientRespotiry.getFirst();
-        channel.writeAndFlush(rpcRequest);
-        return rpcFuture.getResponse();
+    public static Object transfer(RpcRequest rpcRequest) {
+        try {
+            //配置中心已实现负载均衡
+            RegisterConfig.init(false);
+            Instance ins = RegisterConfig.getNamingService().selectOneHealthyInstance(rpcRequest.getServiceName());
+            Assert.notNull(ins,"service not be find :"+rpcRequest.getServiceName());
+            String key = ins.getIp() + ":" + ins.getPort();
+            Channel c = ClientRepository.getChannel(key);
+            if ( c == null ) {
+                String[] split = key.split(":");
+                c = ServiceConnectionFactory.createConnection(split[ 0 ] , Integer.valueOf(split[ 1 ]));
+            }
+            Long id = rpcRequest.getId();
+            RpcFuture rpcFuture = new RpcFuture(id , rpcRequest);
+            RpcFuture.putFuture(id , rpcFuture);
+            c.writeAndFlush(rpcRequest);
+            return rpcFuture.getResponse();
+        } catch (NacosException e) {
+            throw new RuntimeException("register connection error" , e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("register connection error" , e);
+        }
+
     }
 }

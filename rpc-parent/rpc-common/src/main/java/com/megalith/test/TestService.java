@@ -1,7 +1,5 @@
 package com.megalith.test;
 
-import com.megalith.entity.TestEntity;
-
 /**
  * @Description:
  * @author: zhoum
@@ -10,5 +8,7 @@ import com.megalith.entity.TestEntity;
  */
 public interface TestService {
 
-    TestEntity getTest(String username,String password);
+    TestEntity getTest(String username , String password);
+
+    TestEntity getTest1(String username , String password);
 }

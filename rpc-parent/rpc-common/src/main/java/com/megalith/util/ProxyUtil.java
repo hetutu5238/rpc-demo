@@ -1,7 +1,9 @@
-package com.megalith.client;
+package com.megalith.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.megalith.entity.RpcRequest;
+import com.megalith.client.RpcClient;
+import com.megalith.support.RpcRequest;
+import com.megalith.util.Assert;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,17 +17,8 @@ import java.lang.reflect.Proxy;
  */
 public class ProxyUtil implements InvocationHandler {
 
-    private String host;
-
-    private int port;
-
-    public ProxyUtil(String host , int port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public <T>T getProxy(Class<T> t){
-        T o = (T)Proxy.newProxyInstance(t.getClassLoader() , new Class<?>[]{t} , this);
+    public <T> T getProxy(Class<T> t) {
+        T o = (T) Proxy.newProxyInstance(t.getClassLoader() , new Class<?>[]{t} , this);
         return o;
     }
 
@@ -39,14 +32,11 @@ public class ProxyUtil implements InvocationHandler {
         request.setMethodName(method.getName());
         request.setParams(args);
         request.setParamsTypes(method.getParameterTypes());
-        RpcClient client = new RpcClient();
-        Object resp = client.transfer(request);
-        if ( resp ==  null || resp == null){
-            throw new RuntimeException("返回结果序列化错误");
-        }
-        if ( resp instanceof JSONObject ){
+        Object resp = RpcClient.transfer(request);
+        Assert.on(resp == null || resp == null,"返回结果序列化错误");
+        if ( resp instanceof JSONObject ) {
             Class<?> returnType = method.getReturnType();
-            JSONObject jobj = (JSONObject)resp;
+            JSONObject jobj = (JSONObject) resp;
             Object o = jobj.toJavaObject(returnType);
             return o;
         }

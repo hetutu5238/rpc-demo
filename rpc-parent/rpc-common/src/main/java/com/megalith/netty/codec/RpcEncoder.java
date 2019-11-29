@@ -1,6 +1,6 @@
-package com.megalith.handle;
+package com.megalith.netty.codec;
 
-import com.megalith.config.Serilazier;
+import com.megalith.netty.serilaze.Serilazier;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -20,7 +20,7 @@ public class RpcEncoder extends MessageToByteEncoder<Object> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx , Object msg , ByteBuf out)  {
+    protected void encode(ChannelHandlerContext ctx , Object msg , ByteBuf out) {
         byte[] serialize = serilazier.serialize(msg);
         out.writeInt(serialize.length);
         out.writeBytes(serialize);

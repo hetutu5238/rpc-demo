@@ -1,4 +1,4 @@
-package com.megalith.config;
+package com.megalith.netty.serilaze;
 
 /**
  * @Description:
@@ -8,5 +8,6 @@ package com.megalith.config;
  */
 public interface Serilazier {
     byte[] serialize(Object msg);
-    <T> T deserialize(byte[] bytes, Class<T> clz);
+
+    <T> T deserialize(byte[] bytes , Class<T> clz);
 }

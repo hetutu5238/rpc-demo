@@ -1,4 +1,4 @@
-package com.megalith.config;
+package com.megalith.netty.serilaze;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -19,6 +19,6 @@ public class JsonSerilizer implements Serilazier {
 
     @Override
     public <T> T deserialize(byte[] bytes , Class<T> clz) {
-        return JSONObject.parseObject(new String(bytes, Charset.defaultCharset()), clz);
+        return JSONObject.parseObject(new String(bytes , Charset.defaultCharset()) , clz);
     }
 }

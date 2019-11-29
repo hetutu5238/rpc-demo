@@ -1,7 +1,7 @@
-package com.megalith.server;
+package com.megalith.netty.invoke;
 
 import com.megalith.anno.RpcService;
-import com.megalith.entity.TestEntity;
+import com.megalith.test.TestEntity;
 import com.megalith.test.TestService;
 
 /**
@@ -14,6 +14,14 @@ import com.megalith.test.TestService;
 public class TestServiceImpl implements TestService {
     @Override
     public TestEntity getTest(String username , String password) {
+        TestEntity testEntity = new TestEntity();
+        testEntity.setUsername(username);
+        testEntity.setPassword(password);
+        return testEntity;
+    }
+
+    @Override
+    public TestEntity getTest1(String username , String password) {
         TestEntity testEntity = new TestEntity();
         testEntity.setUsername(username);
         testEntity.setPassword(password);
