@@ -10,6 +10,8 @@ import com.rpc.support.RpcFuture;
 import com.rpc.util.Assert;
 import io.netty.channel.Channel;
 
+import java.util.List;
+
 
 /**
  * @Description:
@@ -22,9 +24,12 @@ public class RpcClient {
 
     public static Object transfer(RpcRequest rpcRequest) {
         try {
-            //配置中心已实现负载均衡
+
             RegisterConfig.init(false);
-            //配置中心拿配置
+            //服务注册中心拿服务 服务中心已实现负载均衡  也可以自己实现负载均衡(轮询/hash方式)
+            //List<Instance> instances = RegisterConfig.getNamingService().selectInstances(rpcRequest.getServiceName() , true);
+            //int one = rpcRequest.hashCode()%instances.size();
+            //Instance ins = instances.get(one);
             Instance ins = RegisterConfig.getNamingService().selectOneHealthyInstance(rpcRequest.getServiceName());
             Assert.notNull(ins,"service not be find :"+rpcRequest.getServiceName());
             String key = ins.getIp() + ":" + ins.getPort();
