@@ -10,6 +10,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.util.concurrent.Executors;
+
 /**
  * @Description: 客户1
  * @author: zhoum
@@ -49,11 +51,11 @@ public class Server {
     }
 
     private static EventLoopGroup parentGroup() {
-        return new NioEventLoopGroup(1);
+        return new NioEventLoopGroup(1, Executors.newSingleThreadExecutor());
     }
 
     private static EventLoopGroup workerGroup() {
-        return new NioEventLoopGroup(10);
+        return new NioEventLoopGroup(10,Executors.newFixedThreadPool(10));
     }
 
 }
