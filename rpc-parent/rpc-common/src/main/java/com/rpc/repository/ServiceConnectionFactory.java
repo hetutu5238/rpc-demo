@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 /**
  * @Description:
@@ -39,6 +40,6 @@ public class ServiceConnectionFactory {
     }
 
     private static EventLoopGroup workerGroup() {
-        return new NioEventLoopGroup(10);
+        return new NioEventLoopGroup(10, Executors.newFixedThreadPool(10));
     }
 }
