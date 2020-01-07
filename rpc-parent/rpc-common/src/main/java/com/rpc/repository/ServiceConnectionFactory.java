@@ -40,6 +40,6 @@ public class ServiceConnectionFactory {
     }
 
     private static EventLoopGroup workerGroup() {
-        return new NioEventLoopGroup(10, Executors.newFixedThreadPool(10));
+        return new NioEventLoopGroup(10);
     }
 }

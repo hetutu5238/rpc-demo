@@ -51,11 +51,11 @@ public class Server {
     }
 
     private static EventLoopGroup parentGroup() {
-        return new NioEventLoopGroup(1, Executors.newSingleThreadExecutor());
+        return new NioEventLoopGroup(1);
     }
 
     private static EventLoopGroup workerGroup() {
-        return new NioEventLoopGroup(10,Executors.newFixedThreadPool(10));
+        return new NioEventLoopGroup(10);
     }
 
 }
